@@ -48,7 +48,7 @@ if __name__ == '__main__':
     action_sapce = list(range(env.action_space.n))
 
     EPISODES = 1000
-    LR = 0.9
+    LR = 0.1
     REWARD_DECAY = 0.9
     E_GREEDY = 0.9
 
