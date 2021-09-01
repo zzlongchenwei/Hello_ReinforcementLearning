@@ -14,7 +14,7 @@ from lib.maze_env import Maze
 from Sarsa import Sarsa
 
 
-mylog = MyLog(Path(__file__).parent)
+mylog = MyLog(Path(__file__))
 logger = mylog.logger
 action_list = [" ⬆", " ⬇", " ➡", " ⬅"]
 

@@ -11,14 +11,20 @@ from pathlib import Path
 
 
 class MyLog:
-
-    def __init__(self, path: Path.parent, filesave=False, consoleprint=True):
+    
+    def __init__(self, path: Path, filesave=False, consoleprint=True):
+        """
+        log 
+        :param path: 运行日志的当前文件 Path(__file__)
+        :param filesave: 是否存储日志
+        :param consoleprint: 是否打印到终端"""
+        
         self.formatter = logging.Formatter(
             "%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s")
         self.logger = logging.getLogger(name=__name__)
         self.set_log_level()
-        self.log_path = Path.joinpath(path, 'Logs')
-        self.log_file = os.path.join(self.log_path, time.strftime(
+        self.log_path = Path.joinpath(path.parent, 'Logs')
+        self.log_file = os.path.join(self.log_path, path.stem + time.strftime(
             '%Y%m%d%H%M', time.localtime(time.time())))
 
         self.mk_log_dir()

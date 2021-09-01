@@ -14,7 +14,7 @@ from lib.log import MyLog
 from lib.maze_env import Maze
 
 
-mylog = MyLog(Path(__file__).parent)
+mylog = MyLog(Path(__file__))
 logger = mylog.logger
 
 action_list = [" ⬆", " ⬇", " ➡", " ⬅"]
