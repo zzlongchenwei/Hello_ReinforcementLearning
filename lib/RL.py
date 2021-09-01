@@ -75,6 +75,7 @@ class Sarsa(RL):
             q_target = r
 
         self.q_table.loc[s, a] += self.lr * (q_target - q_predict)
+        
 
 class SarsaLambda(RL):
     def __init__(self, action_space, learning_rate=.01, reward_decay=.9, e_greedy=.9, trace_decay=.9) -> None:
