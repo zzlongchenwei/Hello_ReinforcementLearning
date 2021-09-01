@@ -12,7 +12,7 @@ import tkinter as tk
 
 UNIT = 100  # pixels
 MAZE_C = 7  # grid height
-MAZE_R = 4  # grid width
+MAZE_R = 3  # grid width
 SLEEP = .02
 REC_SIZE = UNIT/2 - 6
 

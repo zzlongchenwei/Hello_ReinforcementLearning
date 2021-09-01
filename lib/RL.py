@@ -75,3 +75,41 @@ class Sarsa(RL):
             q_target = r
 
         self.q_table.loc[s, a] += self.lr * (q_target - q_predict)
+
+class SarsaLambda(RL):
+    def __init__(self, action_space, learning_rate=.01, reward_decay=.9, e_greedy=.9, trace_decay=.9) -> None:
+        super().__init__(action_space, learning_rate=learning_rate, reward_decay=reward_decay, e_greedy=e_greedy)
+
+        self.lambda_ = trace_decay
+        self.eligibility_trace = self.q_table.copy()
+
+    def check_state_exist(self, state):
+        if state not in self.q_table.index:
+            to_be_append = pd.Series(
+                [0] * len(self.actions),
+                index=self.q_table.columns,
+                name=state,
+            )
+            self.q_table = self.q_table.append(to_be_append)
+
+            self.eligibility_trace = self.eligibility_trace.append(to_be_append)
+
+    def learn(self, s, a, r, s_, a_, method=2):
+        self.check_state_exist(s_)
+        q_predict = self.q_table.loc[s, a]
+        if s_ != "terminal":
+            q_target = r + self.gamma * self.q_table.loc[s_, a_]
+        else:
+            q_target = r
+
+        if method == 1:
+            # method 1:
+            self.eligibility_trace.loc[s, a] += 1
+        elif method == 2:
+            # method 2:
+            self.eligibility_trace.loc[s, :] *= 0
+            self.eligibility_trace.loc[s, a] = 1
+        
+        self.q_table += self.lr * (q_target - q_predict) * self.eligibility_trace
+
+        self.eligibility_trace *= self.gamma * self.lambda_
