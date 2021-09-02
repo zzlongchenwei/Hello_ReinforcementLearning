@@ -3,7 +3,7 @@
 # @Date    : 2021-09-01
 # @Author  : chenwei    -剑衣沉沉晚霞归，酒杖津津神仙来- 
 import sys 
-sys.path.append('./')
+sys.path.append('../')
 from pathlib import Path
 import gym
 

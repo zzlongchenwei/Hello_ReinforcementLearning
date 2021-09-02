@@ -4,7 +4,7 @@
 # @Author  : chenwei    -剑衣沉沉晚霞归，酒杖津津神仙来-
 # @From    : https://github.com/MorvanZhou/Reinforcement-learning-with-tensorflow/blob/master/contents/4_Sarsa_lambda_maze/run_this.py
 import sys
-sys.path.append('./')
+sys.path.append('../')
 from pathlib import Path
 
 from lib.log import MyLog
