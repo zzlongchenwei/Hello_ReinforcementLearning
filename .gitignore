@@ -1,4 +1,4 @@
 /.vscode
 /.idea
 **/Logs
-**/__pychae__
+**/__pycache__
