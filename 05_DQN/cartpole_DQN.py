@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 # @File    : cartpole_DQN.py
 # @Date    : 2021-09-02
-# @Author  : chenwei    -剑衣沉沉晚霞归，酒杖津津神仙来- 
+# @Author  : chenwei    -剑衣沉沉晚霞归，酒杖津津神仙来-
 # @From    : https://pytorch.apachecn.org/docs/1.0/reinforcement_q_learning.html
+from pathlib import Path
 import gym
 import math
 import random
@@ -107,16 +108,19 @@ def get_screen():
     if cart_location < view_width // 2:  # 左半边取值
         slice_range = slice(view_width)
     elif cart_location > (screen_width - view_width // 2):  # 右半边取值
+        # 从第-view_width，到最后
+        slice_range = slice(-view_width, None)
+    else:
         slice_range = slice(cart_location - view_width // 2,
                             cart_location + view_width // 2)
 
-        # 去掉边缘，得到一个以小车为中心的正方形图形
-        # 竖着取范围内的值
-        screen = screen[:, :, slice_range]
-        # 转换为float 重新裁剪，转换为torch张量
-        screen = np.ascontiguousarray(screen, dtype=np.float32) / 255
-        screen = torch.from_numpy(screen)
-        return resize(screen).unsqueeze(0).to(device)
+    # 去掉边缘，得到一个以小车为中心的正方形图形
+    # 竖着取范围内的值
+    screen = screen[:, :, slice_range]
+    # 转换为float 重新裁剪，转换为torch张量
+    screen = np.ascontiguousarray(screen, dtype=np.float32) / 255
+    screen = torch.from_numpy(screen)
+    return resize(screen).unsqueeze(0).to(device)
 
 
 env.reset()
@@ -157,7 +161,7 @@ def select_action(state):
     global steps_done
     sample = random.random()
     eps_threshold = EPS_END + (EPS_START - EPS_END) * \
-                    math.exp(-1. * steps_done / EPS_DECAY)
+        math.exp(-1. * steps_done / EPS_DECAY)
     steps_done += 1
     if sample > eps_threshold:
         with torch.no_grad():
@@ -165,7 +169,7 @@ def select_action(state):
             return policy_net(state).max(1)[1].view(1, 1)
     else:
         # 或者随机选一个动作
-        return torch.tensor([random.randrange(2)], device=device, dtype=torch.long)
+        return torch.tensor([[random.randrange(2)]], device=device, dtype=torch.long)
 
 
 episode_durations = []
@@ -220,12 +224,14 @@ def optimize_model():
     # 选择max(1)[0]的最佳奖励。这是基于掩码合并的，这样当状态为最终状态时，我们将获得预期状态值或0。
     next_state_values = torch.zeros(BATCH_SIZE, device=device)
     # # TODO: 从旧网络选择s_状态下的max action的值
-    next_state_values[non_final_mask] = target_net(non_final_next_states).max(1)[0].detach()
+    next_state_values[non_final_mask] = target_net(
+        non_final_next_states).max(1)[0].detach()
     # 计算期望 Q 值
     expected_state_action_values = (next_state_values * GAMMA) + reward_batch
 
     # 计算 Huber 损失
-    loss = F.smooth_l1_loss(state_action_values, expected_state_action_values.unsqueeze(1))
+    loss = F.smooth_l1_loss(state_action_values,
+                            expected_state_action_values.unsqueeze(1))
 
     # 优化模型
     optimizer.zero_grad()
@@ -275,5 +281,12 @@ for i_episode in range(num_episodes):
 print('Complete')
 env.render()
 env.close()
+
+if not Path('./model').exists():
+    Path.mkdir('./model')
+
+torch.save(target_net.state_dict(), './model/target_net.pt')
+torch.save(policy_net.state_dict(), './model/policy_net.pt')
+
 plt.ioff()
 plt.show()
