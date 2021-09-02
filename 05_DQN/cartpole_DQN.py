@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+# @File    : cartpole_DQN.py
+# @Date    : 2021-09-02
+# @Author  : chenwei    -剑衣沉沉晚霞归，酒杖津津神仙来- 
+# @From    : https://pytorch.apachecn.org/docs/1.0/reinforcement_q_learning.html
 import gym
 import math
 import random
