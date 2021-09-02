@@ -45,12 +45,12 @@ if __name__ == '__main__':
     env = gym.make('CartPole-v0')
     env = env.unwrapped
 
-    action_sapce = list(range(env.action_space.n))
+    action_space = list(range(env.action_space.n))
 
     EPISODES = 1000
     LR = 0.1
     REWARD_DECAY = 0.9
     E_GREEDY = 0.9
 
-    rl = Sarsa(action_sapce, learning_rate=LR, reward_decay=REWARD_DECAY, e_greedy=E_GREEDY)
+    rl = Sarsa(action_space, learning_rate=LR, reward_decay=REWARD_DECAY, e_greedy=E_GREEDY)
     cartpole_update(env, rl)
