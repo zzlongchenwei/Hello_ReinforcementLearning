@@ -89,7 +89,7 @@ resize = T.Compose([T.ToPILImage(),
 
 def get_cart_location(screen_width):
     """
-    gym\envs\classic_control\cartpole.py line: 166 
+    gym\envs\classic_control\cartpole.py line: 166
     """
     world_width = env.x_threshold * 2
     scale = screen_width / world_width
@@ -145,7 +145,11 @@ _, _, screen_height, screen_width = init_screen.shape
 
 policy_net = DQN(screen_height, screen_width).to(device)
 target_net = DQN(screen_height, screen_width).to(device)
-target_net.load_state_dict(policy_net.state_dict())
+
+policy_net.load_state_dict(torch.load("./model/policy_net.pt", map_location=device))
+target_net.load_state_dict(torch.load("./model/target_net.pt", map_location=device))
+
+# target_net.load_state_dict(policy_net.state_dict())
 target_net.eval()
 
 optimizer = optim.RMSprop(policy_net.parameters())
@@ -203,8 +207,9 @@ def optimize_model():
     # 将相同的属性打包到一起
     batch = Transition(*zip(*transitions))
     # 计算非最终状态的掩码并连接批处理元素(最终状态将是模拟结束后的状态）
+    # torch.unit8 is deprecated, torch.bool instead.
     non_final_mask = torch.tensor(tuple(map(lambda s: s is not None,
-                                            batch.next_state)), device=device, dtype=torch.uint8)
+                                            batch.next_state)), device=device, dtype=torch.bool)
     # Concatenates the given sequence of seq tensors in the given dimension. 竖着放一起
     non_final_next_states = torch.cat([s for s in batch.next_state
                                        if s is not None])
@@ -241,7 +246,7 @@ def optimize_model():
     optimizer.step()
 
 
-num_episodes = 50
+num_episodes = 1000
 for i_episode in range(num_episodes):
     # 初始化环境和状态
     env.reset()
@@ -282,11 +287,13 @@ print('Complete')
 env.render()
 env.close()
 
-if not Path('./model').exists():
-    Path.mkdir('./model')
+
+Path('./model').mkdir(exist_ok=True)
 
 torch.save(target_net.state_dict(), './model/target_net.pt')
 torch.save(policy_net.state_dict(), './model/policy_net.pt')
 
 plt.ioff()
+
+plt.savefig("result.png")
 plt.show()
